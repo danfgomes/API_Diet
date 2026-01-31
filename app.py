@@ -120,7 +120,47 @@ def create_User():
 
     return jsonify({"message": "User created successfully", "email": email, "user": username}), 201
 
+@app.route("/user/<int:user_id>/meals/<int:meal_id>", methods=["DELETE"])
+def delete_snack(user_id, meal_id):
+     meal = Meal.query.filter_by(id=meal_id, user_id=user_id).first()
 
+     if meal is None:
+        return jsonify({"error": "Meal not found for this user"}), 404
+
+     db.session.delete(meal)
+     db.session.commit()
+
+     return jsonify({"message": "Deleted", "meal_id": meal_id}), 200
+
+@app.route("/user/<int:user_id>/meals", methods=["GET"])
+def select_all_meals(user_id):
+    meals = Meal.query.filter_by(user_id=user_id).order_by(Meal.date.desc()).all()
+
+    return jsonify([
+        {
+            "id": m.id,
+            "description": m.description,
+            "date": m.date.isoformat(),
+            "indicator": m.indicator
+        }
+        for m in meals
+    ]), 200
+
+@app.route("/user/<int:user_id>/meals/<int:meal_id>", methods=["GET"])
+def select_meal(user_id, meal_id ):
+    meal = Meal.query.filter_by(id=meal_id, user_id=user_id).first()
+    
+    if meal is None:
+        return jsonify({"error": "Meal not found for this user"}), 404
+    
+    return jsonify([
+        {
+            "id": meal.id,
+            "description": meal.description,
+            "date": meal.date.isoformat(),
+            "indicator": meal.indicator
+        }
+    ]), 200
 
 if __name__ == "__main__":
     app.run(debug=True)
