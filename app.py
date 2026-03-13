@@ -52,7 +52,7 @@ def login():
     if not user or user.password != password:
         return jsonify({"erro": "Credenciais inválidas"}), 401
 
-    login_user(user)  # ✅ agora o current_user vai existir nas próximas requests
+    login_user(user)  
     return jsonify({"mensagem": "Login OK", "user_id": user.id}), 200
 
 @app.route("/user/registration",methods=["POST"])
